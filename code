@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load dataset
+data = pd.read_csv("https://raw.githubusercontent.com/ahmedgad/Heart-Disease-Prediction/main/dataset.csv")
+
+# Data Preprocessing
+X = data.drop(columns=["target"])
+y = data["target"]
+
+# Splitting data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model Training
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Predictions
+y_pred = model.predict(X_test)
+
+# Model Evaluation
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.2f}")
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# Function to predict heart disease
+def predict_heart_disease(input_data):
+    input_array = np.array(input_data).reshape(1, -1)
+    prediction = model.predict(input_array)
+    return "Heart Disease Detected" if prediction[0] == 1 else "No Heart Disease"
+
+# Example usage
+sample_input = [63, 1, 3, 145, 233, 1, 0, 150, 0, 2.3, 0, 0, 1]  # Example patient data
+print(predict_heart_disease(sample_input))
